@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     },
 
     heading_2: {
+        fontWeight:"bold",
         fontSize: MTDK_Dimensions.height / 32
     },
 

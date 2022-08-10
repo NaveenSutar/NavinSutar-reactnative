@@ -39,17 +39,3 @@ const MTDK_Colours = {
 }
 
 export { MTDK_Colours, MTDK_Dimensions };
-
-// Set 1
-// "#EAE509"
-// "#7DCE13"
-// "#5BB318"
-// "#2B7A0B"
-
-// Set 2
-// "#81B214"
-// "#99c24d"
-// "#006d77"
-// "#2f4858"
-
-// "#d81159"

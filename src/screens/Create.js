@@ -1,7 +1,7 @@
 import React from 'react'
 import { SafeAreaView, StyleSheet, ScrollView, Image } from 'react-native'
 import { MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Heading_1 } from '../components/Fonts';
+import { Heading_1, Heading_2 } from '../components/Fonts';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -11,10 +11,10 @@ const Create = () => {
     return (
         <SafeAreaView style={styles.safeContainer}>
         <ScrollView style={styles.container}>
-                <Heading_1
+                <Heading_2
                     colour={MTDK_Colours.blackDarkest}
                     text={"Create Product"} />
-                    
+
                 <Input
                     iconName={"documents"}
                     iconType={"EntypoIcon"}
