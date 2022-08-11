@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image, ScrollView, Text } from 'react-native'
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image, ScrollView, Text, ActivityIndicator } from 'react-native'
 import { MTDK_Colours, MTDK_Dimensions, API } from '../constants'
 import { Body_1, Body_2, Heading_2, Subtitle } from '../components/Fonts';
-import Icon from '../components/Icon';
 import ProdItem from '../components/ProdItem';
 
 
@@ -30,6 +29,7 @@ const Home = (props) => {
                 .then((json) => {
                     setFilteredProds(json.products)
                     setAllProds(json.products)
+                    console.log(json.products)
                     setloading(false);
 
                 })
@@ -136,12 +136,10 @@ const Home = (props) => {
                 {
                     loading == true ?
                         <View style={styles.noMessage}>
-                            <Icon
-                                name={"download"}
-                                size={MTDK_Dimensions.width / 5}
-                                color={MTDK_Colours.blackLight}
-                                type={"EntypoIcon"}
-                            />
+                            <ActivityIndicator
+                                size="small"
+                                color={MTDK_Colours.primary}
+                                />
                         </View>
                         :
                         filteredProds.length == 0

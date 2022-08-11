@@ -39,10 +39,11 @@ const MTDK_Colours = {
 }
 
 const API = {
-    products:"https://upayments-studycase-api.herokuapp.com/api/products/",
-    categories:"https://upayments-studycase-api.herokuapp.com/api/categories/",
+    products: "https://upayments-studycase-api.herokuapp.com/api/products/",
+    categories: "https://upayments-studycase-api.herokuapp.com/api/categories/",
 
-    token:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+    token: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU',
+    devEmail: "naveen.sutar@gmail.com"
 }
 
 export { MTDK_Colours, MTDK_Dimensions, API };

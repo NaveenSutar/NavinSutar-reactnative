@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import { SafeAreaView, StyleSheet, ScrollView,  FlatList, TouchableOpacity } from 'react-native'
-import { MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Heading_1, Heading_2, Body_2 } from '../components/Fonts';
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
+import { Heading_2, Body_2, Body_1 } from '../components/Fonts';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -11,34 +11,78 @@ const Create = () => {
     const [cats, setCats] = useState([]);
     const [loading, setloading] = useState(false);
 
-    var to
+    const [prodName, setProdName] = useState('');
+    const [prodPrice, setProdPrice] = useState(0);
+    const [prodDesc, setProdDesc] = useState('');
+    const [prodCategory, setProdCategory] = useState('');
+    const [prodAvatar, setProdAvatar] = useState('');
+
+    const [error, setError] = useState('')
 
     useEffect(() => {
         getCat();
     }, []);
 
+    const addProd = async () => {
+        if (prodName == '' || prodPrice == 0 || prodDesc == '' || prodAvatar == '' || prodCategory == '') {
+            setError("All Fileds are mandatory");
+        }
+        else if (isNaN(parseFloat(prodPrice))) {
+            setError("Product price should be a number");
+        }
+        else {
+            try {
+                setloading(true);
+                await fetch(API.products, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: API.token
+                    },
+                    body: JSON.stringify({
+                        name: prodName,
+                        price: parseFloat(prodPrice),
+                        description: prodDesc,
+                        category: prodCategory,
+                        avatar: prodAvatar,
+                        developerEmail: API.devEmail,
+                    })
+                })
+                    .then((response) => response.json())
+                    .then((json) => {
+                        console.log(json);
+                        setloading(false);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        setloading(false);
+                    });
+            } catch (err) {
+                console.error(err);
+                setloading(false);
+            }
+        }
+    }
+
     const getCat = async () => {
         try {
-            setloading(true);
-            await fetch("https://upayments-studycase-api.herokuapp.com/api/categories/", {
+            await fetch(API.categories, {
                 method: 'GET',
                 headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                    Authorization: API.token
                 }
             })
                 .then((response) => response.json())
                 .then((json) => {
                     setCats(json.categories)
-                    setloading(false);
 
                 })
                 .catch((error) => {
                     console.error(error);
-                    setloading(false);
                 });
         } catch (err) {
             console.error(err);
-            setloading(false);
         }
     }
 
@@ -50,6 +94,8 @@ const Create = () => {
             <TouchableOpacity
                 onPress={() => {
                     setSelected(item._id);
+                    setProdCategory(item.name);
+                    setError('');
                 }}
                 style={[styles.catContainer, {
                     backgroundColor: backgroundColor,
@@ -69,8 +115,13 @@ const Create = () => {
                 <Input
                     iconName={"documents"}
                     iconType={"EntypoIcon"}
-                    placeholder='Product Title'
+                    placeholder='Name'
                     autoCapitalize={'none'}
+                    onChangeText={name => {
+                        setError('');
+                        setProdName(name);
+                    }}
+                    defaultValue={prodName}
                 />
 
                 <Input
@@ -78,6 +129,12 @@ const Create = () => {
                     iconType={"EntypoIcon"}
                     placeholder='Price'
                     autoCapitalize={'none'}
+                    keyboardType={'numeric'}
+                    onChangeText={price => {
+                        setError('');
+                        setProdPrice(price);
+                    }}
+                    defaultValue={prodPrice}
                 />
 
                 <Input
@@ -85,6 +142,11 @@ const Create = () => {
                     iconType={"EntypoIcon"}
                     placeholder='Description'
                     autoCapitalize={'none'}
+                    onChangeText={desc => {
+                        setError('');
+                        setProdDesc(desc);
+                    }}
+                    defaultValue={prodDesc}
                 />
 
                 <Input
@@ -92,6 +154,11 @@ const Create = () => {
                     iconType={"EntypoIcon"}
                     placeholder='Image Link'
                     autoCapitalize={'none'}
+                    onChangeText={avatar => {
+                        setError('');
+                        setProdAvatar(avatar);
+                    }}
+                    defaultValue={prodAvatar}
                 />
 
                 <FlatList
@@ -102,9 +169,13 @@ const Create = () => {
                     renderItem={renderCategory}
                 />
 
+                {error == '' ? null : <Body_2 text={error} colour={MTDK_Colours.danger} style={{ marginTop: MTDK_Dimensions.halfMargin }} />}
+
                 <Button
-                    title="ADD PRODUCT"
-                    onPress={() => console.warn('Signin')}
+                    title={loading ? <ActivityIndicator
+                        size="small" />
+                        : "ADD PRODUCT"}
+                    onPress={addProd}
                 />
 
             </ScrollView>
