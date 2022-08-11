@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, ScrollView } from 'react-native'
 import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
 import { Heading_2 } from '../components/Fonts';
 import ProdDetail from '../components/ProdDetail';
+import Header from '../components/Header';
 
 
 const Detail = (props) => {
@@ -34,10 +35,14 @@ const Detail = (props) => {
     return (
         <SafeAreaView style={styles.safeContainer}>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-                <Heading_2
-                    style={styles.heading}
-                    colour={MTDK_Colours.blackDarkest}
-                    text={"Detail"} />
+ 
+                <Header
+                    style={{
+                        marginVertical: MTDK_Dimensions.margin,
+                        marginHorizontal:MTDK_Dimensions.margin
+                    }}
+                    onPress={() => props.navigation.goBack()}
+                    title={"Detail"} />
 
                 <ProdDetail
                     imgSrc={prod.avatar}

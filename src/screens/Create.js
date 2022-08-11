@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { SafeAreaView, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, View } from 'react-native'
 import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
 import { Heading_2, Body_2, Body_1 } from '../components/Fonts';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
+import Icon from '../components/Icon';
+import Header from '../components/Header';
 
-const Create = () => {
+const Create = (props) => {
     const [selected, setSelected] = useState(1);
     const [cats, setCats] = useState([]);
     const [loading, setloading] = useState(false);
@@ -51,8 +53,13 @@ const Create = () => {
                 })
                     .then((response) => response.json())
                     .then((json) => {
-                        console.log(json);
                         setloading(false);
+                        if (json.message == "Success") {
+                            props.navigation.navigate('Home');
+                        }
+                        else {
+                            setError("Something went wrong!!!")
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
@@ -108,9 +115,11 @@ const Create = () => {
     return (
         <SafeAreaView style={styles.safeContainer}>
             <ScrollView scrollEnabled={false} style={styles.container}>
-                <Heading_2
-                    colour={MTDK_Colours.blackDarkest}
-                    text={"Create Product"} />
+
+                <Header
+                    onPress={() => props.navigation.goBack()}
+                    title={"Create Product"} />
+
 
                 <Input
                     iconName={"documents"}
