@@ -5,7 +5,32 @@ import { Body_1, Body_2, Heading_2, Subtitle } from '../components/Fonts';
 import Icon from '../components/Icon';
 
 
-const Home = () => {
+const Detail = (props) => {
+    const { prodId } = props.route.params;
+    const [prod, setProd] = useState([]);
+
+    useEffect(() => {
+        getProd();
+    }, []);
+
+    const getProd = async () => {
+        try {
+            const response = await fetch("https://upayments-studycase-api.herokuapp.com/api/products/" + prodId, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setProd(result.product);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     return (
         <SafeAreaView style={styles.safeContainer}>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -19,14 +44,14 @@ const Home = () => {
                     style={styles.prodContainer}>
 
                     <Image
-                        resizeMode='cover'
+                        resizeMode='contain'
                         height={0}
                         width={0}
                         style={{
                             width: MTDK_Dimensions.width,
                             height: MTDK_Dimensions.width / 1.5,
                             alignSelf: 'center'
-                        }} source={require('../assets/images/one.jpg')} />
+                        }} source={{ uri: prod.avatar }} />
 
                     <Heading_2 style={
                         {
@@ -35,7 +60,7 @@ const Home = () => {
                         }}
                         numberOfLines={3}
                         colour={MTDK_Colours.primary}
-                        text={"iPhone SE"} />
+                        text={prod.name} />
 
                     <Subtitle style={
                         {
@@ -44,15 +69,24 @@ const Home = () => {
                         }}
                         numberOfLines={1}
                         colour={MTDK_Colours.blackDarkest}
-                        text={"$ 1000"} />
+                        text={"$ " + prod.price} />
 
-                    <Body_1 style={
+                    <Body_2 style={
                         {
                             paddingTop: MTDK_Dimensions.padding,
+                            paddingBottom:0,
                             paddingHorizontal: MTDK_Dimensions.padding,
                         }}
                         colour={MTDK_Colours.blackDarker}
-                        text={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."} />
+                        text={"Deescription"} />
+
+                    <Body_1 style={
+                        {
+                            paddingTop: MTDK_Dimensions.halfPadding,
+                            paddingHorizontal: MTDK_Dimensions.padding,
+                        }}
+                        colour={MTDK_Colours.blackDarker}
+                        text={prod.description} />
 
                     <Icon
                         style={{
@@ -72,11 +106,14 @@ const Home = () => {
     )
 }
 
-// Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-
 const styles = StyleSheet.create({
     safeContainer: {
         flex: 1,
+        backgroundColor: MTDK_Colours.white
+    },
+
+    container: {
+        backgroundColor: MTDK_Colours.white
     },
 
     heading: {
@@ -103,4 +140,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Home;
+export default Detail;

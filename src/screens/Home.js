@@ -1,81 +1,72 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, FlatList, Text, View, TouchableOpacity, Image } from 'react-native'
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image } from 'react-native'
 import { MTDK_Colours, MTDK_Dimensions } from '../constants'
 import { Body_2, Heading_2, Subtitle } from '../components/Fonts';
 import Icon from '../components/Icon';
 
-const DATA = [
-    {
-        id: 1,
-        title: "All",
-        price: 1000
-    },
-    {
-        id: 2,
-        title: "Accessories",
-        price: 10
 
-    },
-    {
-        id: 3,
-        title: "Women Clothing",
-        price: 10
+const Home = (props) => {
+    const [selected, setSelected] = useState();
+    const [prods, setProds] = useState([]);
+    const [cats, setCats] = useState([]);
 
-    },
-    {
-        id: 4,
-        title: "Four",
-        price: 10
+    useEffect(() => {
+        getCat();
+        getProd();
+    }, []);
 
-    },
-    {
-        id: 5,
-        title: "Five",
-        price: 10
-
-    },
-    {
-        id: 6,
-        title: "Six",
-        price: 10
-
-    },
-    {
-        id: 7,
-        title: "Seven",
-        price: 10
-
-    },
-    {
-        id: 8,
-        title: "Eight",
-        price: 10
-
-    },
-    {
-        id: 9,
-        title: "Nine",
-        price: 10
+    const getProd = () => {
+        try {
+            fetch("https://upayments-studycase-api.herokuapp.com/api/products", {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                }
+            }).then((response) => response.json())
+            .then((json) => {
+                setProds(json.products)
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
-];
 
-
-const Home = () => {
-    const [selected, setSelected] = useState(1);
+    const getCat = () => {
+        try {
+            fetch("https://upayments-studycase-api.herokuapp.com/api/categories/", {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                }
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    setCats(json.categories)
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     const renderCategory = ({ item }) => {
-        const backgroundColor = item.id === selected ? MTDK_Colours.primary : MTDK_Colours.white;
-        const color = item.id === selected ? MTDK_Colours.white : MTDK_Colours.primary;
+        const backgroundColor = item._id === selected ? MTDK_Colours.primary : MTDK_Colours.white;
+        const color = item._id === selected ? MTDK_Colours.white : MTDK_Colours.primary;
 
         return (
             <TouchableOpacity
                 onPress={() => {
-                    setSelected(item.id);
+                    setSelected(item._id);
                 }}
                 style={[styles.catContainer, {
                     backgroundColor: backgroundColor,
                 }]}>
-                <Body_2 colour={color} text={item.title} />
+                <Body_2 colour={color} text={item.name} />
             </TouchableOpacity>
         )
     }
@@ -84,22 +75,22 @@ const Home = () => {
         return (
             <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {
-                    console.log("Product")
-                }}
+                onPress={() => props.navigation.navigate('Detail', { prodId: item._id })}
+
                 style={styles.prodContainer}>
 
                 <Image
-                    resizeMode='cover'
+                    resizeMode='contain'
                     height={0}
                     width={0}
                     style={{
-                        width: MTDK_Dimensions.width / 2 - MTDK_Dimensions.margin * 1.6,
+                        width: MTDK_Dimensions.width / 2 - MTDK_Dimensions.margin * 1.7,
                         height: MTDK_Dimensions.width / 3,
-                        alignSelf: 'center',
-                        borderTopLeftRadius: MTDK_Dimensions.radius,
-                        borderTopRightRadius: MTDK_Dimensions.radius
-                    }} source={require('../assets/images/one.jpg')} />
+                        alignSelf: 'center'
+                    }}
+                    source={{
+                        uri: item.avatar
+                    }} />
 
                 <Body_2 style={
                     {
@@ -108,7 +99,7 @@ const Home = () => {
                     }}
                     numberOfLines={1}
                     colour={MTDK_Colours.blackDarkest}
-                    text={item.title} />
+                    text={item.name} />
                 <Subtitle style={
                     {
                         paddingTop: MTDK_Dimensions.halfPadding,
@@ -117,7 +108,9 @@ const Home = () => {
                     numberOfLines={1}
                     colour={MTDK_Colours.blackDarkest}
                     text={"$ " + item.price} />
+
                 <TouchableOpacity
+                    onPress={() => props.navigation.navigate('Create')}
                     activeOpacity={0.7}
                     style={{
                         position: 'absolute',
@@ -157,8 +150,7 @@ const Home = () => {
 
     return (
         <SafeAreaView style={styles.safeContainer}>
-
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.container} showsVerticalScrollIndicator={false}>
                 <Heading_2
                     style={styles.heading}
                     colour={MTDK_Colours.blackDarkest}
@@ -168,24 +160,26 @@ const Home = () => {
                     style={styles.flatlist}
                     showsHorizontalScrollIndicator={false}
                     horizontal
-                    data={DATA}
+                    data={cats}
                     renderItem={renderCategory}
                 />
 
-                <Subtitle text={"Products"} colour={MTDK_Colours.black} style={{ paddingHorizontal: MTDK_Dimensions.padding }} />
+                <Subtitle text={"Products"} colour={MTDK_Colours.black} style={{ paddingHorizontal: MTDK_Dimensions.padding, paddingVertical: MTDK_Dimensions.halfPadding }} />
 
                 <FlatList
-                    data={DATA}
+                    data={prods}
+                    showsVerticalScrollIndicator={false}
                     renderItem={renderproducts}
                     numColumns={2}
                     style={styles.containerPadding}
                 />
-            </ScrollView>
+            </View>
             <TouchableOpacity
+                onPress={() => props.navigation.navigate('Create')}
                 activeOpacity={0.7}
                 style={{
                     position: 'absolute',
-                    right: MTDK_Dimensions.margin,
+                    right: MTDK_Dimensions.margin * 1.5,
                     bottom: MTDK_Dimensions.margin * 2,
                     backgroundColor: MTDK_Colours.primary,
                     height: MTDK_Dimensions.width / 8,
@@ -203,6 +197,12 @@ const Home = () => {
 const styles = StyleSheet.create({
     safeContainer: {
         flex: 1,
+        backgroundColor: MTDK_Colours.white
+    },
+
+    container: {
+        flex: 1,
+        backgroundColor: MTDK_Colours.white
     },
 
     heading: {
@@ -211,12 +211,12 @@ const styles = StyleSheet.create({
     },
 
     containerPadding: {
-        margin: MTDK_Dimensions.padding / 2,
+        marginHorizontal: MTDK_Dimensions.padding / 2,
     },
 
     flatlist: {
         paddingHorizontal: MTDK_Dimensions.padding,
-        paddingEnd: MTDK_Dimensions.padding
+        paddingEnd: MTDK_Dimensions.padding,
     },
 
     catContainer: {
@@ -229,6 +229,10 @@ const styles = StyleSheet.create({
         borderRadius: MTDK_Dimensions.radius,
         borderColor: MTDK_Colours.primary,
         borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: MTDK_Dimensions.width / 12
+
     },
 
     prodContainer: {
