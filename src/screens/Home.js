@@ -1,71 +1,103 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image } from 'react-native'
-import { MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Body_2, Heading_2, Subtitle } from '../components/Fonts';
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image, ScrollView, Text } from 'react-native'
+import { MTDK_Colours, MTDK_Dimensions, API } from '../constants'
+import { Body_1, Body_2, Heading_2, Subtitle } from '../components/Fonts';
 import Icon from '../components/Icon';
+import ProdItem from '../components/ProdItem';
 
 
 const Home = (props) => {
-    const [selected, setSelected] = useState();
-    const [prods, setProds] = useState([]);
+    const [selected, setSelected] = useState('');
+    const [allProds, setAllProds] = useState([]);
+    const [filteredProds, setFilteredProds] = useState([]);
     const [cats, setCats] = useState([]);
+    const [loading, setloading] = useState(false);
 
     useEffect(() => {
         getCat();
         getProd();
     }, []);
 
-    const getProd = () => {
+    const getProd = async () => {
         try {
-            fetch("https://upayments-studycase-api.herokuapp.com/api/products", {
+            setloading(true);
+            await fetch(API.products, {
                 method: 'GET',
                 headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                    Authorization: API.token
                 }
             }).then((response) => response.json())
-            .then((json) => {
-                setProds(json.products)
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+                .then((json) => {
+                    setFilteredProds(json.products)
+                    setAllProds(json.products)
+                    setloading(false);
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setloading(false);
+                });
         } catch (err) {
             console.error(err);
+            setloading(false);
         }
     }
 
-    const getCat = () => {
+    const getCat = async () => {
         try {
-            fetch("https://upayments-studycase-api.herokuapp.com/api/categories/", {
+            setloading(true);
+            await fetch(API.categories, {
                 method: 'GET',
                 headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                    Authorization: API.token
                 }
             })
                 .then((response) => response.json())
                 .then((json) => {
                     setCats(json.categories)
+                    setloading(false);
+
                 })
                 .catch((error) => {
                     console.error(error);
+                    setloading(false);
                 });
         } catch (err) {
             console.error(err);
+            setloading(false);
+        }
+    }
+
+    const filterProds = (item) => {
+        console.log(item);
+        setSelected(item.name);
+
+        if (item.name === 'all') {
+            setFilteredProds(allProds);
+        }
+        else {
+            var filteredProds = allProds.filter((el) => {
+                return item.name === el.category
+            })
+            setFilteredProds(filteredProds);
         }
     }
 
     const renderCategory = ({ item }) => {
-        const backgroundColor = item._id === selected ? MTDK_Colours.primary : MTDK_Colours.white;
-        const color = item._id === selected ? MTDK_Colours.white : MTDK_Colours.primary;
+        const backgroundColor = item.name === selected ? MTDK_Colours.primary : MTDK_Colours.white;
+        const color = item.name === selected ? MTDK_Colours.white : MTDK_Colours.primary;
 
         return (
             <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={() => {
-                    setSelected(item._id);
+                    filterProds(item);
                 }}
-                style={[styles.catContainer, {
-                    backgroundColor: backgroundColor,
-                }]}>
+                style={[styles.catContainer,
+                {
+                    backgroundColor: backgroundColor
+                }
+                ]}>
                 <Body_2 colour={color} text={item.name} />
             </TouchableOpacity>
         )
@@ -73,84 +105,19 @@ const Home = (props) => {
 
     const renderproducts = ({ item }) => {
         return (
-            <TouchableOpacity
-                activeOpacity={0.7}
+            <ProdItem
+                onEditPress={() => props.navigation.navigate('Create')}
                 onPress={() => props.navigation.navigate('Detail', { prodId: item._id })}
-
-                style={styles.prodContainer}>
-
-                <Image
-                    resizeMode='contain'
-                    height={0}
-                    width={0}
-                    style={{
-                        width: MTDK_Dimensions.width / 2 - MTDK_Dimensions.margin * 1.7,
-                        height: MTDK_Dimensions.width / 3,
-                        alignSelf: 'center'
-                    }}
-                    source={{
-                        uri: item.avatar
-                    }} />
-
-                <Body_2 style={
-                    {
-                        paddingTop: MTDK_Dimensions.halfPadding,
-                        paddingHorizontal: MTDK_Dimensions.halfPadding,
-                    }}
-                    numberOfLines={1}
-                    colour={MTDK_Colours.blackDarkest}
-                    text={item.name} />
-                <Subtitle style={
-                    {
-                        paddingTop: MTDK_Dimensions.halfPadding,
-                        paddingHorizontal: MTDK_Dimensions.halfPadding,
-                    }}
-                    numberOfLines={1}
-                    colour={MTDK_Colours.blackDarkest}
-                    text={"$ " + item.price} />
-
-                <TouchableOpacity
-                    onPress={() => props.navigation.navigate('Create')}
-                    activeOpacity={0.7}
-                    style={{
-                        position: 'absolute',
-                        right: MTDK_Dimensions.halfMargin,
-                        top: MTDK_Dimensions.halfPadding,
-                        backgroundColor: MTDK_Colours.primary,
-                        padding: 5,
-                        borderRadius: 30
-
-                    }}
-                >
-                    <Icon
-                        name={"edit"}
-                        size={MTDK_Dimensions.width / 30}
-                        color={MTDK_Colours.white}
-                        type={"EntypoIcon"}
-                    />
-
-                </TouchableOpacity>
-
-                <Icon
-                    style={{
-                        position: 'absolute',
-                        right: MTDK_Dimensions.halfMargin,
-                        bottom: MTDK_Dimensions.halfPadding,
-                    }}
-                    name={"heart"}
-                    size={MTDK_Dimensions.width / 20}
-                    color={MTDK_Colours.danger}
-                    type={"EntypoIcon"}
-                />
-
-
-            </TouchableOpacity>
+                name={item.name}
+                price={item.price}
+                imgSrc={item.avatar}
+            />
         )
     }
 
     return (
         <SafeAreaView style={styles.safeContainer}>
-            <View style={styles.container} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <Heading_2
                     style={styles.heading}
                     colour={MTDK_Colours.blackDarkest}
@@ -162,32 +129,42 @@ const Home = (props) => {
                     horizontal
                     data={cats}
                     renderItem={renderCategory}
+                    keyExtractor={item => item._id}
                 />
 
-                <Subtitle text={"Products"} colour={MTDK_Colours.black} style={{ paddingHorizontal: MTDK_Dimensions.padding, paddingVertical: MTDK_Dimensions.halfPadding }} />
+                <Subtitle text={"Products"} colour={MTDK_Colours.black} style={styles.header} />
+                {
+                    loading == true ?
+                        <View style={styles.noMessage}>
+                            <Icon
+                                name={"download"}
+                                size={MTDK_Dimensions.width / 5}
+                                color={MTDK_Colours.blackLight}
+                                type={"EntypoIcon"}
+                            />
+                        </View>
+                        :
+                        filteredProds.length == 0
+                            ?
+                            <View style={styles.noMessage}>
+                                <Body_1 text={"No Products available"} colour={MTDK_Colours.blackLight} style={{ paddingHorizontal: MTDK_Dimensions.padding }} />
+                            </View>
+                            :
+                            <FlatList
+                                data={filteredProds}
+                                showsVerticalScrollIndicator={false}
+                                renderItem={renderproducts}
+                                numColumns={2}
+                                style={styles.containerPadding}
+                                keyExtractor={item => item._id}
+                            />
+                }
+            </ScrollView>
 
-                <FlatList
-                    data={prods}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={renderproducts}
-                    numColumns={2}
-                    style={styles.containerPadding}
-                />
-            </View>
             <TouchableOpacity
                 onPress={() => props.navigation.navigate('Create')}
                 activeOpacity={0.7}
-                style={{
-                    position: 'absolute',
-                    right: MTDK_Dimensions.margin * 1.5,
-                    bottom: MTDK_Dimensions.margin * 2,
-                    backgroundColor: MTDK_Colours.primary,
-                    height: MTDK_Dimensions.width / 8,
-                    width: MTDK_Dimensions.width / 8,
-                    borderRadius: MTDK_Dimensions.width,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
+                style={styles.floatButton}>
                 <Heading_2 text={"+"} colour={MTDK_Colours.white} />
             </TouchableOpacity>
         </SafeAreaView>
@@ -210,6 +187,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: MTDK_Dimensions.padding
     },
 
+    header: {
+        paddingHorizontal: MTDK_Dimensions.padding
+    },
+
     containerPadding: {
         marginHorizontal: MTDK_Dimensions.padding / 2,
     },
@@ -228,21 +209,27 @@ const styles = StyleSheet.create({
 
         borderRadius: MTDK_Dimensions.radius,
         borderColor: MTDK_Colours.primary,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: MTDK_Dimensions.width / 12
+        borderWidth: 1
 
     },
 
-    prodContainer: {
-        margin: MTDK_Dimensions.margin / 2,
-        width: MTDK_Dimensions.width / 2 - MTDK_Dimensions.margin * 1.5,
+    noMessage: {
+        flex: 1,
+        paddingVertical: MTDK_Dimensions.padding * 12,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 
-        borderWidth: 0.7,
-        borderColor: MTDK_Colours.blackLighter,
-        borderRadius: MTDK_Dimensions.radius,
-        paddingBottom: MTDK_Dimensions.halfPadding
+    floatButton: {
+        position: 'absolute',
+        right: MTDK_Dimensions.margin * 1.5,
+        bottom: MTDK_Dimensions.margin * 2,
+        backgroundColor: MTDK_Colours.primary,
+        height: MTDK_Dimensions.width / 8,
+        width: MTDK_Dimensions.width / 8,
+        borderRadius: MTDK_Dimensions.width,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 
 })

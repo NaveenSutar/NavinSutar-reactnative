@@ -6,77 +6,55 @@ import { Heading_1, Heading_2, Body_2 } from '../components/Fonts';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
-const DATA = [
-    {
-        id: 1,
-        title: "All",
-        price: 1000
-    },
-    {
-        id: 2,
-        title: "Accessories",
-        price: 10
-
-    },
-    {
-        id: 3,
-        title: "Women Clothing",
-        price: 10
-
-    },
-    {
-        id: 4,
-        title: "Four",
-        price: 10
-
-    },
-    {
-        id: 5,
-        title: "Five",
-        price: 10
-
-    },
-    {
-        id: 6,
-        title: "Six",
-        price: 10
-
-    },
-    {
-        id: 7,
-        title: "Seven",
-        price: 10
-
-    },
-    {
-        id: 8,
-        title: "Eight",
-        price: 10
-
-    },
-    {
-        id: 9,
-        title: "Nine",
-        price: 10
-    }
-];
-
 const Create = () => {
     const [selected, setSelected] = useState(1);
+    const [cats, setCats] = useState([]);
+    const [loading, setloading] = useState(false);
+
+    var to
+
+    useEffect(() => {
+        getCat();
+    }, []);
+
+    const getCat = async () => {
+        try {
+            setloading(true);
+            await fetch("https://upayments-studycase-api.herokuapp.com/api/categories/", {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                }
+            })
+                .then((response) => response.json())
+                .then((json) => {
+                    setCats(json.categories)
+                    setloading(false);
+
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setloading(false);
+                });
+        } catch (err) {
+            console.error(err);
+            setloading(false);
+        }
+    }
 
     const renderCategory = ({ item }) => {
-        const backgroundColor = item.id === selected ? MTDK_Colours.primary : MTDK_Colours.white;
-        const color = item.id === selected ? MTDK_Colours.white : MTDK_Colours.primary;
+        const backgroundColor = item._id === selected ? MTDK_Colours.primary : MTDK_Colours.white;
+        const color = item._id === selected ? MTDK_Colours.white : MTDK_Colours.primary;
 
         return (
             <TouchableOpacity
                 onPress={() => {
-                    setSelected(item.id);
+                    setSelected(item._id);
                 }}
                 style={[styles.catContainer, {
                     backgroundColor: backgroundColor,
                 }]}>
-                <Body_2 colour={color} text={item.title} />
+                <Body_2 colour={color} text={item.name} />
             </TouchableOpacity>
         )
     }
@@ -120,7 +98,7 @@ const Create = () => {
                     style={styles.flatlist}
                     showsHorizontalScrollIndicator={false}
                     horizontal
-                    data={DATA}
+                    data={cats}
                     renderItem={renderCategory}
                 />
 

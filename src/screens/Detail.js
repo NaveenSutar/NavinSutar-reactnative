@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, FlatList, Text, View, TouchableOpacity, Image } from 'react-native'
-import { MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Body_1, Body_2, Heading_2, Subtitle } from '../components/Fonts';
-import Icon from '../components/Icon';
+import { SafeAreaView, StyleSheet, ScrollView } from 'react-native'
+import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
+import { Heading_2 } from '../components/Fonts';
+import ProdDetail from '../components/ProdDetail';
 
 
 const Detail = (props) => {
@@ -15,10 +15,10 @@ const Detail = (props) => {
 
     const getProd = async () => {
         try {
-            const response = await fetch("https://upayments-studycase-api.herokuapp.com/api/products/" + prodId, {
+            const response = await fetch(API.products + prodId, {
                 method: 'GET',
                 headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5hdmVlbi5zdXRhckBnbWFpbC5jb20iLCJnaXRodWIiOiJodHRwczovL2dpdGh1Yi5jb20vTmF2ZWVuU3V0YXIiLCJpYXQiOjE2NjAxNTIzNzQsImV4cCI6MTY2MDU4NDM3NH0.hy9nopHOFwy9vdJJtwM5mUtZ_4Exp9-jskQVOBrdHWU'
+                    Authorization: API.token
                 }
             });
 
@@ -39,68 +39,13 @@ const Detail = (props) => {
                     colour={MTDK_Colours.blackDarkest}
                     text={"Detail"} />
 
+                <ProdDetail
+                    imgSrc={prod.avatar}
+                    name={prod.name}
+                    price={prod.price}
+                    description={prod.description}
+                />
 
-                <View
-                    style={styles.prodContainer}>
-
-                    <Image
-                        resizeMode='contain'
-                        height={0}
-                        width={0}
-                        style={{
-                            width: MTDK_Dimensions.width,
-                            height: MTDK_Dimensions.width / 1.5,
-                            alignSelf: 'center'
-                        }} source={{ uri: prod.avatar }} />
-
-                    <Heading_2 style={
-                        {
-                            paddingTop: MTDK_Dimensions.padding,
-                            paddingHorizontal: MTDK_Dimensions.padding,
-                        }}
-                        numberOfLines={3}
-                        colour={MTDK_Colours.primary}
-                        text={prod.name} />
-
-                    <Subtitle style={
-                        {
-                            paddingTop: MTDK_Dimensions.halfPadding,
-                            paddingHorizontal: MTDK_Dimensions.padding,
-                        }}
-                        numberOfLines={1}
-                        colour={MTDK_Colours.blackDarkest}
-                        text={"$ " + prod.price} />
-
-                    <Body_2 style={
-                        {
-                            paddingTop: MTDK_Dimensions.padding,
-                            paddingBottom:0,
-                            paddingHorizontal: MTDK_Dimensions.padding,
-                        }}
-                        colour={MTDK_Colours.blackDarker}
-                        text={"Deescription"} />
-
-                    <Body_1 style={
-                        {
-                            paddingTop: MTDK_Dimensions.halfPadding,
-                            paddingHorizontal: MTDK_Dimensions.padding,
-                        }}
-                        colour={MTDK_Colours.blackDarker}
-                        text={prod.description} />
-
-                    <Icon
-                        style={{
-                            position: 'absolute',
-                            right: MTDK_Dimensions.halfMargin,
-                            top: MTDK_Dimensions.halfPadding,
-
-                        }}
-                        name={"heart"}
-                        size={MTDK_Dimensions.width / 18}
-                        color={MTDK_Colours.danger}
-                        type={"EntypoIcon"}
-                    />
-                </View>
             </ScrollView>
         </SafeAreaView>
     )
@@ -119,25 +64,7 @@ const styles = StyleSheet.create({
     heading: {
         paddingVertical: MTDK_Dimensions.padding,
         paddingHorizontal: MTDK_Dimensions.padding
-    },
-
-    containerPadding: {
-        margin: MTDK_Dimensions.padding / 2,
-    },
-
-    flatlist: {
-        paddingHorizontal: MTDK_Dimensions.padding,
-        paddingEnd: MTDK_Dimensions.padding
-    },
-
-    prodContainer: {
-        width: MTDK_Dimensions.width,
-
-        borderColor: MTDK_Colours.blackLighter,
-        borderRadius: MTDK_Dimensions.radius,
-        paddingBottom: MTDK_Dimensions.halfPadding
     }
-
 })
 
 export default Detail;
