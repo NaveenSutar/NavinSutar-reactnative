@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, View, Image, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput } from 'react-native';
 import { MTDK_Colours, MTDK_Dimensions } from '../constants';
 import Icon from './Icon';
 

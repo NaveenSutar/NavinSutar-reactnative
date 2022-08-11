@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, ScrollView } from 'react-native'
 import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Heading_2 } from '../components/Fonts';
 import ProdDetail from '../components/ProdDetail';
 import Header from '../components/Header';
 

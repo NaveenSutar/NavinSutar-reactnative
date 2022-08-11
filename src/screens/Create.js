@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, View } from 'react-native'
+import { SafeAreaView, StyleSheet, ScrollView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { API, MTDK_Colours, MTDK_Dimensions } from '../constants'
-import { Heading_2, Body_2, Body_1 } from '../components/Fonts';
+import { Body_2 } from '../components/Fonts';
 
 import Input from '../components/Input';
 import Button from '../components/Button';
-import Icon from '../components/Icon';
 import Header from '../components/Header';
 
 const Create = (props) => {
